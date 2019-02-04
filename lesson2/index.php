@@ -1,8 +1,7 @@
 <?php
-function renderTemplate($page) {
+function renderTemplate($page, $content = '') {
     ob_start();
-    $content = file_get_contents($page . '.php');
-    include 'layout.php';
+    include $page . '.php';
     return ob_get_clean();
 }
-echo renderTemplate('welcome');
+echo renderTemplate('layout', renderTemplate('welcome'));

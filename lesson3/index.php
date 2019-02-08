@@ -77,7 +77,7 @@ function transliteration(string $str) {
         $sign = mb_substr($str, $i, 1); //mb_substr() возвращает нужное количество символов (1), начиная с позиции $i от начала
         if (array_key_exists($sign, $alphabet)) { //array_key_exists() проверяет, присутствует ли в массиве указанный ключ или индекс
             $response .= $alphabet[$sign];
-        } else if (array_key_exists(mb_strtolower($sign), $alphabet)) { //mb_strtolower() приведение строки к нижнему регистру
+        } else if ($alphabet[mb_strtolower($sign)]) { //mb_strtolower() приведение строки к нижнему регистру
             $response .= mb_strtoupper($alphabet[mb_strtolower($sign)]); //mb_strtoupper() приведение строки к верхнему регистру
         } else {
             $response .= $sign;
@@ -169,7 +169,7 @@ function renderMenu($listItem, $parent = '') {
 echo renderMenu($subenuItem);
 
 echo '<h4>Задание 7</h4>';
-for ($i = 0; $i < 10; $i += print($i)){} //print выводит строку и возвращает 1
+for ($i = 0; $i < 10; print$i++){} //print выводит строку и возвращает 1
 
 echo '<h4>Задание 8</h4>';
 foreach ($city as $key => $value) {

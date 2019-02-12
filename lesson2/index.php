@@ -1,7 +1,21 @@
 <?php
-function renderTemplate($page, $content = '') {
+function renderTemplate($page, array $params = []) {
     ob_start();
-    include $page . '.php';
+    if (!is_null($params)) {
+        extract($params);
+    }
+    $fileName = $page . '.php';
+    if (file_exists($fileName)) {
+        include $fileName;
+    } else {
+        Die('404 Страницы не существует!');
+    }
     return ob_get_clean();
 }
-echo renderTemplate('layout', renderTemplate('welcome'));
+echo renderTemplate('layout', [
+    'content' => renderTemplate('welcome', [
+        'header' => 'Приветствуем вас на нашем сайте!',
+    ]), 
+    'title' => 'Заголовок страницы', 
+    'year' => '2019',
+    ]);

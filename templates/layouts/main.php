@@ -9,6 +9,11 @@
     </head>
     <body class="min-vh-100">
         <div class="min-vh-100 d-flex flex-column">
+            <header class="bg-secondary mb-3">
+                <div class="container">
+                    <?=$menu;?>
+                </div>
+            </header>
             <main class="container">
                 <?=$content;?>
             </main>

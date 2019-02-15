@@ -1,0 +1,20 @@
+.image-block {
+    position: relative;
+    display: inline-block;
+}
+.image-block .btn.btn-danger {
+    position: absolute;
+    top: -2px;
+    right:  -2px;
+    padding: 0;
+    line-height: 1;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-weight: bold;
+    text-align: center;
+    z-index: 10;
+}
+.image-block:hover img {
+    opacity: .6;
+}

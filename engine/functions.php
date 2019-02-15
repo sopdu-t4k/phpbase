@@ -1,37 +1,95 @@
 <?php
-function render($page, $params = []) {
-    return renderTemplate(LAYOUTS_DIR . 'main', [
-        'content' => renderTemplate($page, $params),
-        'menu' => renderTemplate('menu', $params),
-        'title' => 'Название сайта', 
-        'year' => '2019',
-    ]);
+function getImages() {
+    $sort = mysqli_real_escape_string(getDb(), $_GET['sort']);
+    switch ($sort) {
+        case 'popularity':
+            $sql = "SELECT * FROM gallery ORDER BY count DESC";
+            break;
+        case 'imagename':
+            $sql = "SELECT * FROM gallery ORDER BY title";
+            break;
+        default:
+            $sql = "SELECT * FROM gallery";
+    }
+    $images = getAssocResult($sql);
+    return $images;
 }
 
-function renderTemplate($page, $params = []) {
-    ob_start();
-    if (!is_null($params)) {
-        extract($params);
+function getImageContent($id) {
+    $id = (int)$id;
+    $up = "UPDATE gallery SET `count`=`count`+1 WHERE `id`={$id};";
+    executeQuery($up);
+    $sql = "SELECT * FROM gallery WHERE id = {$id}";
+    $images = getAssocResult($sql);
+    $result = [];
+    if(isset($images[0])) {
+        $result = $images[0];
     }
-    $fileName = TEMPLATES_DIR . "{$page}.php";
-    if (file_exists($fileName)) {
-        include $fileName;
-    } else {
-        Die('404 Страницы не существует!');
-    }
-    return ob_get_clean();
+    return $result;
 }
 
-function renderMenu($listItem, $parent = '') {
-    $content = '<ul class="nav">';
-    foreach ($listItem as $value) {
-        $href = $parent . $value['href'];
-        if (isset($value['items']) && !is_null($value['items'])) {
-            $content .= "<li class='nav-item dropdown'><a href='{$href}'>{$value['name']}</a>" . renderMenu($value['items'], $href) . "</li>";
+function changeImage() {
+    if (isset($_GET['delete'])) {
+        $name = mysqli_real_escape_string(getDb(), $_GET['delete']);
+        deleteImage($name);
+    }
+    if (isset($_POST['load'])) {
+        addImage($_FILES['image']);
+    }
+}
+
+function addImage($file) {
+    $filetype = $file['type'];
+    if ($filetype == 'image/png' || $filetype == 'image/jpeg') {
+        $path = GALLERY_DIR . "big/{$file['name']}";
+        if (move_uploaded_file($file['tmp_name'], $path)) {
+            resizeImage($file['name']);
+            $sql = "INSERT INTO gallery (`title`) VALUES ('{$file['name']}')";
+            executeQuery($sql);
+            $success = 1;
+            $message = 1;
         } else {
-            $content .= "<li class='nav-item'><a href='{$href}' class='nav-link text-white'>{$value['name']}</a></li>";
+            $success = 0;
+            $message = 2;
+        }
+    } else {
+        $success = 0;
+        $message = 3;
+    }
+    header("Location: /gallery/?success={$success}&message={$message}");
+}
+
+function resizeImage($img) {
+    $image = new SimpleImage();
+    $image->load(GALLERY_DIR ."big/{$img}");
+    $image->resize(150, 100);
+    $image->save(GALLERY_DIR ."small/{$img}");
+}
+
+function deleteImage($name) {
+    if (@unlink(GALLERY_DIR . "big/{$name}") && @unlink(GALLERY_DIR . "small/{$name}")) {
+        $sql = "DELETE FROM gallery WHERE `title`='{$name}'";
+        executeQuery($sql);
+        $success = 1;
+        $message = 4;
+    } else {
+        $success = 0;
+        $message = 5;
+    }
+    header("Location: /gallery/?success={$success}&message={$message}");
+}
+
+function getMessage() {
+    $message = '';
+    if (isset($_GET['message'])) {
+        switch ((int)$_GET['message']) {
+            case 1: $message = 'Файл загружен'; break;
+            case 2: $message = 'Ошибка загрузки'; break;
+            case 3: $message = 'Выберите файл с расширением .jpeg или .png'; break;
+            case 4: $message = 'Файл удален'; break;
+            case 5: $message = 'Ошибка удаления'; break;
+            default: $message = '';
         }
     }
-    $content .= '</ul>';
-    return $content;
+    return $message;
 }

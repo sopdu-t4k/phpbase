@@ -18,3 +18,9 @@
 .image-block:hover img {
     opacity: .6;
 }
+.card-img-top {
+    display: block;
+    margin: 0 auto;
+    height: 250px;
+    width: auto;
+}

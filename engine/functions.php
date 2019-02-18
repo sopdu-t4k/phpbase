@@ -28,7 +28,7 @@ function getImageContent($id) {
     return $result;
 }
 
-function changeImage() {
+function handleRequest() {
     if (isset($_GET['delete'])) {
         $name = mysqli_real_escape_string(getDb(), $_GET['delete']);
         deleteImage($name);
@@ -92,4 +92,79 @@ function getMessage() {
         }
     }
     return $message;
+}
+
+function getActionList() {
+    $operations = [
+        [
+            'option' => '+',
+            'value' => 'plus',
+        ],
+        [
+            'option' => '-',
+            'value' => 'minus',
+        ],
+        [
+            'option' => '*',
+            'value' => 'mult',
+        ],
+        [
+            'option' => '/',
+            'value' => 'div',
+        ],
+    ];
+    if (isset($_GET['operation'])) {
+        array_walk($operations, function(&$operation) {
+            $operation['selected'] = $operation['value'] == $_GET['operation'];
+        });
+    }
+    return $operations;
+}
+
+function mathOperation($arg1, $arg2, $oper){
+    $rez = 0;
+    switch ($oper) {
+        case 'plus':
+            $rez = $arg1 + $arg2; break;
+        case 'minus':
+            $rez = $arg1 - $arg2; break;
+        case 'mult':
+            $rez = $arg1 * $arg2; break;
+        case 'div':
+            $rez = $arg2 != 0 ? $arg1 / $arg2 : 0;
+    }
+    return $rez;
+}
+
+function getProducts() {
+    $sql = "SELECT `id`,`name`,`price`,`image` FROM goods";
+    $products = getAssocResult($sql);
+    return $products;
+}
+
+function getProductContent($id) {
+    $id = (int)$id;
+    $sql = "SELECT * FROM goods WHERE id = {$id}";
+    $product = getAssocResult($sql);
+    $result = [];
+    if(isset($product[0])) {
+        $result = $product[0];
+    }
+    return $result;
+}
+
+function getCommentsProduct($id) {
+    $id = (int)$id;
+    $sql = "SELECT * FROM comments WHERE `good_id` = {$id} ORDER BY `id` DESC";
+    $comments = getAssocResult($sql);
+    return $comments;
+}
+
+function addComment($id) {
+    $id = (int)$id;
+    $db = getDb();
+    $user = mysqli_real_escape_string($db, strip_tags(htmlspecialchars($_POST['user'])));
+    $message = mysqli_real_escape_string($db, strip_tags(htmlspecialchars($_POST['message'])));
+    $sql = "INSERT INTO comments (`user`, `message`, `good_id`) VALUES ('{$user}', '{$message}', {$id});";
+    executeQuery($sql);
 }

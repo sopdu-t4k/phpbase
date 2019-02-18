@@ -28,16 +28,6 @@ function getImageContent($id) {
     return $result;
 }
 
-function handleRequest() {
-    if (isset($_GET['delete'])) {
-        $name = mysqli_real_escape_string(getDb(), $_GET['delete']);
-        deleteImage($name);
-    }
-    if (isset($_POST['load'])) {
-        addImage($_FILES['image']);
-    }
-}
-
 function addImage($file) {
     $filetype = $file['type'];
     if ($filetype == 'image/png' || $filetype == 'image/jpeg') {
@@ -66,9 +56,11 @@ function resizeImage($img) {
     $image->save(GALLERY_DIR ."small/{$img}");
 }
 
-function deleteImage($name) {
+function deleteImage($id) {
+    $id = (int)$id;
+    $name = getImageName($id);
     if (@unlink(GALLERY_DIR . "big/{$name}") && @unlink(GALLERY_DIR . "small/{$name}")) {
-        $sql = "DELETE FROM gallery WHERE `title`='{$name}'";
+        $sql = "DELETE FROM gallery WHERE id = {$id}";
         executeQuery($sql);
         $success = 1;
         $message = 4;
@@ -77,6 +69,16 @@ function deleteImage($name) {
         $message = 5;
     }
     header("Location: /gallery/?success={$success}&message={$message}");
+}
+
+function getImageName($id) {
+    $sql = "SELECT `title` FROM gallery WHERE id = {$id}";
+    $result = getAssocResult($sql);
+    $name = '';
+    if(isset($result[0])) {
+        $name = $result[0]['title'];
+    }
+    return $name;
 }
 
 function getMessage() {

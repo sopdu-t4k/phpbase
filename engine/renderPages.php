@@ -8,7 +8,12 @@ function prepareVariables($page, $action, $id) {
         case 'index':
             break;
         case 'gallery':
-            handleRequest();
+            if ($action == 'add' && isset($_POST['load'])) {
+                addImage($_FILES['image']);
+            }
+            if ($action == 'delete') {
+                deleteImage($id);
+            }
             $params['images'] = getImages();
             $params['message'] = getMessage();
             $params['success'] = (int)$_GET['success'] == 1;

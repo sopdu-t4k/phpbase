@@ -54,7 +54,7 @@
             e.preventDefault();
             var formData = $('#ajx-calc').serialize() + '&ajx-operation=' + $(this).attr('name');
             $.ajax({
-                url: '/calculated',
+                url: '/calc/math/',
                 type: 'POST',
                 dataType: 'json',
                 data: formData,

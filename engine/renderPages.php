@@ -24,33 +24,30 @@ function prepareVariables($page, $action, $id) {
             $params['count'] = $content['count'];
             break;
         case 'calc':
-            $params['operations'] = getActionList();
-            if (isset($_GET['submit'])) {
-                $operand1 = (int)$_GET['operand1'];
-                $operand2 = (int)$_GET['operand2'];
-                $operation = $_GET['operation'];
-                $params['operand1'] = $operand1;
-                $params['operand2'] = $operand2;
-                $params['rezult'] = mathOperation($operand1, $operand2, $operation);
-            }
-            break;
-        case 'calculated':
-            $operand1 = (int)$_POST['ajx-operand1'];
-            $operand2 = (int)$_POST['ajx-operand2'];
-            $operation = $_POST['ajx-operation'];
-            $params['ajx_rezult'] = mathOperation($operand1, $operand2, $operation);
-            $params['is_ajax'] = true;
+            $params = array_merge($params, handleMathAction($action));
             break;
         case 'catalog':
             $params['goods'] = getProducts();
             break;
         case 'tovar':
-            if ($action == 'comment') {
+            if ($action == 'comment' && isset($_POST['send'])) {
                 addComment($id);
                 header ("Location: /tovar/{$id}");
             }
             $params['good'] = getProductContent($id);
             $params['comments'] = getCommentsProduct($id);
+            break;
+        case 'reviews':
+            if ($action == 'delete') {
+                deleteComment($id);
+            }
+            if ($action == 'edit') {
+                $params['id_edit'] = (int)$id;
+                updateComment($id);
+            }
+            $params['comments'] = getAllComments();
+            $params['message'] = getMessage();
+            $params['success'] = (int)$_GET['success'] == 1;
     }
     return $params;
 }
@@ -68,6 +65,10 @@ function getMenuItems() {
         [
             'name' => 'Каталог',
             'href' => '/catalog/',
+        ],
+        [
+            'name' => 'Отзывы',
+            'href' => '/reviews/',
         ],
         [
             'name' => 'Калькулятор',

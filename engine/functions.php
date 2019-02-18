@@ -11,8 +11,7 @@ function getImages() {
         default:
             $sql = "SELECT * FROM gallery";
     }
-    $images = getAssocResult($sql);
-    return $images;
+    return getAssocResult($sql);
 }
 
 function getImageContent($id) {
@@ -86,62 +85,21 @@ function getMessage() {
     if (isset($_GET['message'])) {
         switch ((int)$_GET['message']) {
             case 1: $message = 'Файл загружен'; break;
-            case 2: $message = 'Ошибка загрузки'; break;
+            case 2: $message = 'Произошла ошибка'; break;
             case 3: $message = 'Выберите файл с расширением .jpeg или .png'; break;
             case 4: $message = 'Файл удален'; break;
             case 5: $message = 'Ошибка удаления'; break;
+            case 6: $message = 'Отзыв удален'; break;
+            case 7: $message = 'Отзыв изменен'; break;
             default: $message = '';
         }
     }
     return $message;
 }
 
-function getActionList() {
-    $operations = [
-        [
-            'option' => '+',
-            'value' => 'plus',
-        ],
-        [
-            'option' => '-',
-            'value' => 'minus',
-        ],
-        [
-            'option' => '*',
-            'value' => 'mult',
-        ],
-        [
-            'option' => '/',
-            'value' => 'div',
-        ],
-    ];
-    if (isset($_GET['operation'])) {
-        array_walk($operations, function(&$operation) {
-            $operation['selected'] = $operation['value'] == $_GET['operation'];
-        });
-    }
-    return $operations;
-}
-
-function mathOperation($arg1, $arg2, $oper){
-    $rez = 0;
-    switch ($oper) {
-        case 'plus':
-            $rez = $arg1 + $arg2; break;
-        case 'minus':
-            $rez = $arg1 - $arg2; break;
-        case 'mult':
-            $rez = $arg1 * $arg2; break;
-        case 'div':
-            $rez = $arg2 != 0 ? $arg1 / $arg2 : 0;
-    }
-    return $rez;
-}
-
 function getProducts() {
     $sql = "SELECT `id`,`name`,`price`,`image` FROM goods";
-    $products = getAssocResult($sql);
-    return $products;
+    return getAssocResult($sql);
 }
 
 function getProductContent($id) {
@@ -158,15 +116,58 @@ function getProductContent($id) {
 function getCommentsProduct($id) {
     $id = (int)$id;
     $sql = "SELECT * FROM comments WHERE `good_id` = {$id} ORDER BY `id` DESC";
-    $comments = getAssocResult($sql);
-    return $comments;
+    return getAssocResult($sql);
+}
+
+function getAllComments() {
+    $sql = "SELECT * FROM comments ORDER BY `id` DESC";
+    return getAssocResult($sql);
 }
 
 function addComment($id) {
     $id = (int)$id;
+    $user = dataPrepar()['user'];
+    $message = dataPrepar()['message'];
+    $sql = "INSERT INTO comments (`user`, `message`, `good_id`) VALUES ('{$user}', '{$message}', {$id});";
+    executeQuery($sql);
+}
+
+function deleteComment($id) {
+    $id = (int)$id;
+    $sql = "DELETE FROM comments WHERE id = {$id}";
+    if (@executeQuery($sql)) {
+        $success = 1;
+        $message = 6;
+    } else {
+        $success = 0;
+        $message = 5;
+    }
+    header ("Location: /reviews/?success={$success}&message={$message}");
+}
+
+function updateComment($id) {
+    if (isset($_POST['save'])) {
+        $id = (int)$id;
+        $user = dataPrepar()['user'];
+        $message = dataPrepar()['message'];
+        $sql = "UPDATE comments SET `user`='{$user}', `message`='{$message}' WHERE id = {$id}";
+        if (executeQuery($sql)) {
+            $success = 1;
+            $message = 7;
+        } else {
+            $success = 0;
+            $message = 2;
+        }
+        header ("Location: /reviews/?success={$success}&message={$message}");
+    }
+}
+
+function dataPrepar() {
     $db = getDb();
     $user = mysqli_real_escape_string($db, strip_tags(htmlspecialchars($_POST['user'])));
     $message = mysqli_real_escape_string($db, strip_tags(htmlspecialchars($_POST['message'])));
-    $sql = "INSERT INTO comments (`user`, `message`, `good_id`) VALUES ('{$user}', '{$message}', {$id});";
-    executeQuery($sql);
+    return [
+        'user' => $user,
+        'message' => $message,
+    ];
 }

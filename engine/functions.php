@@ -11,8 +11,7 @@ function getImages() {
         default:
             $sql = "SELECT * FROM gallery";
     }
-    $images = getAssocResult($sql);
-    return $images;
+    return getAssocResult($sql);
 }
 
 function getImageContent($id) {
@@ -26,16 +25,6 @@ function getImageContent($id) {
         $result = $images[0];
     }
     return $result;
-}
-
-function changeImage() {
-    if (isset($_GET['delete'])) {
-        $name = mysqli_real_escape_string(getDb(), $_GET['delete']);
-        deleteImage($name);
-    }
-    if (isset($_POST['load'])) {
-        addImage($_FILES['image']);
-    }
 }
 
 function addImage($file) {
@@ -66,9 +55,11 @@ function resizeImage($img) {
     $image->save(GALLERY_DIR ."small/{$img}");
 }
 
-function deleteImage($name) {
+function deleteImage($id) {
+    $id = (int)$id;
+    $name = getImageName($id);
     if (@unlink(GALLERY_DIR . "big/{$name}") && @unlink(GALLERY_DIR . "small/{$name}")) {
-        $sql = "DELETE FROM gallery WHERE `title`='{$name}'";
+        $sql = "DELETE FROM gallery WHERE id = {$id}";
         executeQuery($sql);
         $success = 1;
         $message = 4;
@@ -79,17 +70,104 @@ function deleteImage($name) {
     header("Location: /gallery/?success={$success}&message={$message}");
 }
 
+function getImageName($id) {
+    $sql = "SELECT `title` FROM gallery WHERE id = {$id}";
+    $result = getAssocResult($sql);
+    $name = '';
+    if(isset($result[0])) {
+        $name = $result[0]['title'];
+    }
+    return $name;
+}
+
 function getMessage() {
     $message = '';
     if (isset($_GET['message'])) {
         switch ((int)$_GET['message']) {
             case 1: $message = 'Файл загружен'; break;
-            case 2: $message = 'Ошибка загрузки'; break;
+            case 2: $message = 'Произошла ошибка'; break;
             case 3: $message = 'Выберите файл с расширением .jpeg или .png'; break;
             case 4: $message = 'Файл удален'; break;
             case 5: $message = 'Ошибка удаления'; break;
+            case 6: $message = 'Отзыв удален'; break;
+            case 7: $message = 'Отзыв изменен'; break;
             default: $message = '';
         }
     }
     return $message;
+}
+
+function getProducts() {
+    $sql = "SELECT `id`,`name`,`price`,`image` FROM goods";
+    return getAssocResult($sql);
+}
+
+function getProductContent($id) {
+    $id = (int)$id;
+    $sql = "SELECT * FROM goods WHERE id = {$id}";
+    $product = getAssocResult($sql);
+    $result = [];
+    if(isset($product[0])) {
+        $result = $product[0];
+    }
+    return $result;
+}
+
+function getCommentsProduct($id) {
+    $id = (int)$id;
+    $sql = "SELECT * FROM comments WHERE `good_id` = {$id} ORDER BY `id` DESC";
+    return getAssocResult($sql);
+}
+
+function getAllComments() {
+    $sql = "SELECT * FROM comments ORDER BY `id` DESC";
+    return getAssocResult($sql);
+}
+
+function addComment($id) {
+    $id = (int)$id;
+    $user = dataPrepar()['user'];
+    $message = dataPrepar()['message'];
+    $sql = "INSERT INTO comments (`user`, `message`, `good_id`) VALUES ('{$user}', '{$message}', {$id});";
+    executeQuery($sql);
+}
+
+function deleteComment($id) {
+    $id = (int)$id;
+    $sql = "DELETE FROM comments WHERE id = {$id}";
+    if (@executeQuery($sql)) {
+        $success = 1;
+        $message = 6;
+    } else {
+        $success = 0;
+        $message = 5;
+    }
+    header ("Location: /reviews/?success={$success}&message={$message}");
+}
+
+function updateComment($id) {
+    if (isset($_POST['save'])) {
+        $id = (int)$id;
+        $user = dataPrepar()['user'];
+        $message = dataPrepar()['message'];
+        $sql = "UPDATE comments SET `user`='{$user}', `message`='{$message}' WHERE id = {$id}";
+        if (executeQuery($sql)) {
+            $success = 1;
+            $message = 7;
+        } else {
+            $success = 0;
+            $message = 2;
+        }
+        header ("Location: /reviews/?success={$success}&message={$message}");
+    }
+}
+
+function dataPrepar() {
+    $db = getDb();
+    $user = mysqli_real_escape_string($db, strip_tags(htmlspecialchars($_POST['user'])));
+    $message = mysqli_real_escape_string($db, strip_tags(htmlspecialchars($_POST['message'])));
+    return [
+        'user' => $user,
+        'message' => $message,
+    ];
 }

@@ -11,6 +11,7 @@ define('PASS', '123456');
 define('DB', 'phpbase');
 
 include_once ENGINE_DIR . 'functions.php';
+include_once ENGINE_DIR . 'calculation.php';
 include_once ENGINE_DIR . 'classSimpleImage.php';
 include_once ENGINE_DIR . 'db.php';
 include_once ENGINE_DIR . 'renderPages.php';

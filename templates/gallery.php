@@ -13,8 +13,8 @@
 <div class="clearfix mt-4 mb-4">
 <? foreach ($images as $image): ?>
     <div class="image-block">
-        <a href="/gallery/?delete=<?=$image['title'];?>" class="btn btn-danger" title="Удалить">&times;</a>
-        <a href="/image/?id=<?=$image['id'];?>" title="Посмотреть">
+        <a href="/gallery/delete/<?=$image['id'];?>" class="btn btn-danger" title="Удалить">&times;</a>
+        <a href="/image/<?=$image['id'];?>" title="Посмотреть">
             <figure class="figure float-left m-1 img-thumbnail shadow-sm">
                 <img src="/gallery-img/small/<?=$image['title'];?>" />
                 <figcaption class="figure-caption">
@@ -32,7 +32,7 @@
     <?=$message;?>
 </div>
 <? endif; ?>
-<form method="post" enctype="multipart/form-data">
+<form method="post" action="/gallery/add/" enctype="multipart/form-data">
     <div class="form-group">
         <input type="file" name="image" class="form-control-file" />
     </div>

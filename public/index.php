@@ -22,6 +22,6 @@ if ($url_array[1] == '') {
     }
 }
 
-$params = prepareVariables($page, $action, $id);
+$params = prepareVariables($page, $action, $id, isAuth());
 
 echo render($page, $params, $params['is_ajax']);

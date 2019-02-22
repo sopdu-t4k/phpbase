@@ -1,6 +1,5 @@
 <?php
-function handleCommentAction($action, $id) {
-    $params = [];
+function handleCommentAction($action, $id, $params) {
     if ($action == 'delete') {
         deleteComment($id);
     }

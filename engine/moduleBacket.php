@@ -1,6 +1,5 @@
 <?php
-function handleBasketAction($action, $id) {
-    $params = [];
+function handleBasketAction($action, $id, $params) {
     if ($action == 'buy' && isset($_POST['good'])) {
         $params['adding'] = addGoodInCart();
         $params['is_ajax'] = true;
@@ -60,7 +59,8 @@ function getTotalQuantity() {
 
 function deleteGoodBasket($id) {
     $id = (int)$id;
-    $sql = "DELETE FROM order_goods WHERE id = {$id}";
+    $session = session_id();
+    $sql = "DELETE FROM order_goods WHERE (`session` = '{$session}') AND (id = {$id})";
     executeQuery($sql);
 }
 

@@ -1,9 +1,9 @@
 <?php
-function prepareVariables($page, $action, $id, $allow = false) {
+function prepareVariables($page, $action, $id) {
     $params = [
         'menu' => getMenuItems(),
         'is_ajax' => false,
-        'allow' => $allow,
+        'allow' => isAuth(),
         'current' => $page,
     ];
     switch ($page) {
@@ -17,8 +17,8 @@ function prepareVariables($page, $action, $id, $allow = false) {
             $params['images'] = getImages();
             $params['message'] = getMessage();
             $params['success'] = (int)$_GET['success'] == 1;
-            if ($allow) {
-                $params = array_merge($params, handleGalleryAction($action, $id));
+            if ($params['allow']) {
+                $params = handleGalleryAction($action, $id, $params);
             }
             break;
         case 'image':
@@ -27,7 +27,7 @@ function prepareVariables($page, $action, $id, $allow = false) {
             $params['count'] = $content['count'];
             break;
         case 'calc':
-            $params = array_merge($params, handleMathAction($action));
+            $params = handleMathAction($action, $params);
             break;
         case 'catalog':
             $params['goods'] = getProducts();
@@ -38,11 +38,11 @@ function prepareVariables($page, $action, $id, $allow = false) {
             $params['comments'] = getProductComments($id);
             break;
         case 'comments':
-            if ($allow || $action == 'add') { 
+            if ($params['allow'] || $action == 'add') { 
                 $params['comments'] = getAllComments();
                 $params['message'] = getMessage();
                 $params['success'] = (int)$_GET['success'] == 1;
-                $params = array_merge($params, handleCommentAction($action, $id));
+                $params = handleCommentAction($action, $id, $params);
             } else {
                 header("Location: /admin/");
             }
@@ -52,15 +52,15 @@ function prepareVariables($page, $action, $id, $allow = false) {
             $params['total'] = getTotalAmount();
             $params['message'] = getMessage();
             $params['success'] = (int)$_GET['success'] == 1;
-            $params = array_merge($params, handleBasketAction($action, $id));
+            $params = handleBasketAction($action, $id, $params);
             break;
         case 'orders':
-            if (!$allow) { header("Location: /admin/"); }
+            if (!$params['allow']) { header("Location: /admin/"); }
             $params['orders'] = getAllOrders();
             $params['amount'] = getAmountEachOrder();
             break;
         case 'order':
-            if (!$allow) { header("Location: /admin/"); }
+            if (!$params['allow']) { header("Location: /admin/"); }
             $params['order'] = getOrderData($id);
             $params['basket'] = getOrderBasket($id);
             $params['total'] = getOrderTotalAmount($id);
@@ -68,8 +68,8 @@ function prepareVariables($page, $action, $id, $allow = false) {
     return $params;
 }
 
-function render($page, $params = [], $is_ajax = false) {
-    if (!$is_ajax) {
+function render($page, $params = []) {
+    if (!$params['is_ajax']) {
         return renderTemplate(LAYOUTS_DIR . 'main', [
             'allow' => isAuth(),
             'user' => getUser(),

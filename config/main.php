@@ -12,6 +12,10 @@ define('DB', 'phpbase');
 
 include_once ENGINE_DIR . 'functions.php';
 include_once ENGINE_DIR . 'calculation.php';
+include_once ENGINE_DIR . 'moduleBacket.php';
+include_once ENGINE_DIR . 'moduleGallery.php';
 include_once ENGINE_DIR . 'classSimpleImage.php';
+include_once ENGINE_DIR . 'moduleComments.php';
 include_once ENGINE_DIR . 'db.php';
-include_once ENGINE_DIR . 'renderPages.php';
+include_once ENGINE_DIR . 'authUser.php';
+include_once ENGINE_DIR . 'controller.php';

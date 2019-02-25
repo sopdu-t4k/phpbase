@@ -13,7 +13,9 @@
 <div class="clearfix mt-4 mb-4">
 <? foreach ($images as $image): ?>
     <div class="image-block">
+        <? if($allow): ?>
         <a href="/gallery/delete/<?=$image['id'];?>" class="btn btn-danger" title="Удалить">&times;</a>
+        <? endif; ?>
         <a href="/image/<?=$image['id'];?>" title="Посмотреть">
             <figure class="figure float-left m-1 img-thumbnail shadow-sm">
                 <img src="/gallery-img/small/<?=$image['title'];?>" />
@@ -26,15 +28,17 @@
     </div>
 <? endforeach; ?>
 </div>
-<h4>Загрузить изображение</h4>
-<? if(!empty($message)): ?>
-<div class="alert <?=$success?'alert-success':'alert-danger';?>" role="alert">
-    <?=$message;?>
-</div>
+<? if($allow): ?>
+    <h4>Загрузить изображение</h4>
+    <? if(!empty($message)): ?>
+        <div class="alert <?=$success?'alert-success':'alert-danger';?>" role="alert">
+            <?=$message;?>
+        </div>
+    <? endif; ?>
+    <form method="post" action="/gallery/add/" enctype="multipart/form-data">
+        <div class="form-group">
+            <input type="file" name="image" class="form-control-file" />
+        </div>
+        <input type="submit" name="load" value="Загрузить" class="btn btn-primary"/>
+    </form>
 <? endif; ?>
-<form method="post" action="/gallery/add/" enctype="multipart/form-data">
-    <div class="form-group">
-        <input type="file" name="image" class="form-control-file" />
-    </div>
-    <input type="submit" name="load" value="Загрузить" class="btn btn-primary"/>
-</form>

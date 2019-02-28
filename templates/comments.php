@@ -6,7 +6,7 @@
 <? endif; ?>
 <? if (isset($comments)): ?>
     <? foreach ($comments as $comment): ?>
-    <div class="media mt-4 mb-4">
+    <div class="media mt-4 mb-4" id="comment_<?=$comment['id'];?>">
         <img class="d-flex mr-3 rounded-circle" src="http://placehold.it/50x50" alt="">
         <div class="media-body">
             <? if ($comment['id'] == $id_edit): ?>
@@ -25,9 +25,9 @@
             <p class="text-muted">Отзыв о <a href="/tovar/<?=$comment['good_id'];?>">товаре</a></p>
             <?=$comment['message'];?>
             <div class="mt-3">
-                <a href="/comments/delete/<?=$comment['id'];?>" class="btn btn-danger btn-sm mr-sm-2">Удалить</a>
+                <button data-action="delete" data-id="<?=$comment['id'];?>" class="btn btn-danger btn-sm mr-sm-2">Удалить</button>
                 <a href="/comments/edit/<?=$comment['id'];?>" class="btn btn-info btn-sm mr-sm-2">Изменить</a>
-                <a href="/comments/public/<?=$comment['id'];?>" class="btn btn-warning btn-sm mr-sm-2"><?=$comment['public']==0?'Опубликовать':'Отменить публикацию';?></a>
+                <button data-action="public" data-id="<?=$comment['id'];?>" class="btn btn-warning btn-sm mr-sm-2"><?=$comment['public']==0?'Опубликовать':'Отменить публикацию';?></button>
             </div>
         <? endif; ?>
         </div>

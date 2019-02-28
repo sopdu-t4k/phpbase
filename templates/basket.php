@@ -3,7 +3,7 @@
 <table class="table my-5">
     <thead class="thead-light table-sm">
         <tr>
-            <th class="px-3">Наименование</th>
+            <th>Наименование</th>
             <th>Цена</th>
             <th>Количество</th>
             <th></th>
@@ -16,10 +16,10 @@
                 <a href="/tovar/<?=$good['good_id'];?>" class="h5"><?=$good['name'];?></a>
             </td>
             <td class="align-middle">
-                <span class="h5"><?=$good['price'];?> р.</span>
+                <span class="h5"><?=round($good['current_price']);?> р.</span>
             </td>
             <td style="width: 60px">
-                <input type="number" name="quantity" data-id="<?=$good['id'];?>" class="form-control form-control-sm" value="<?=$good['quantity'];?>">
+                <input type="number" name="quantity" data-id="<?=$good['id'];?>" class="form-control form-control-sm" value="<?=$good['quantity'];?>" autocomplete="off">
             </td>
             <td class="text-right">
                 <a href="/basket/delete/<?=$good['id'];?>" class="btn btn-danger btn-sm" title="Удалить товар">&times;</a>
@@ -43,7 +43,7 @@
         <p class="h5">
             Общая стоимость: 
             <span class="h4 text-danger ml-2">
-                <span id="total"><?=$total['summ'];?></span> р. 
+                <span id="total"><?=round($total['summ']);?></span> р. 
             </span>
         </p>
     </div>
@@ -51,12 +51,12 @@
 <div class="alert alert-warning mt-5" role="alert">Для оформления заказа укажите Ваше имя и телефон</div>
 <div class="row">
     <div class="col-4 mb-3">
-        <form id="order" action="/basket/order/" method="post">
+        <form name="order" action="/basket/order/" method="post">
             <div class="form-group">
-                <input type="text" name="client" class="form-control" placeholder="Имя" required>
+                <input type="text" name="name" class="form-control" placeholder="Имя">
             </div>
             <div class="form-group">
-                <input type="text" name="phone" class="form-control" placeholder="+7 (000) 0000000" required>
+                <input type="text" name="phone" class="form-control" placeholder="8(000)0000000">
             </div>
             <button type="submit" name="send" class="btn btn-success btn-block">Оформить заказ</button>
         </form>

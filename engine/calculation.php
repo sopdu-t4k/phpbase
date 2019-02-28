@@ -1,5 +1,5 @@
 <?php
-function handleMathAction($action, $params) {
+function handleMathAction($action, &$params) {
     if ($action == 'math') {
         $operand1 = (int)$_POST['ajx-operand1'];
         $operand2 = (int)$_POST['ajx-operand2'];
@@ -16,7 +16,6 @@ function handleMathAction($action, $params) {
         $params['rezult'] = mathOperation($operand1, $operand2, $operation);
     }
     $params['operations'] = getActionList();
-    return $params;
 }
 
 function getActionList() {

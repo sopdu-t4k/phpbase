@@ -1,4 +1,5 @@
 <?php
+session_start();
 include '../config/main.php';
 
 $url_array = explode('/', $_SERVER['REQUEST_URI']);

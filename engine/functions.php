@@ -10,6 +10,10 @@ function getMenuItems() {
             'href' => '/catalog/',
         ],
         [
+            'name' => 'Акции',
+            'href' => '/sale/',
+        ],
+        [
             'name' => 'Галерея',
             'href' => '/gallery/',
         ],
@@ -26,13 +30,14 @@ function getMessage() {
         switch ((int)$_GET['message']) {
             case 1: $message = 'Файл загружен'; break;
             case 2: $message = 'Произошла ошибка'; break;
-            case 3: $message = 'Выберите файл с расширением .jpeg или .png'; break;
+            case 3: $message = 'Выберите файл с расширением .jpg или .png'; break;
             case 4: $message = 'Файл удален'; break;
             case 5: $message = 'Ошибка удаления'; break;
             case 6: $message = 'Отзыв удален'; break;
             case 7: $message = 'Отзыв изменен'; break;
             case 8: $message = 'Заказ отправлен! Мы свяжемся с Вами по указанному телефону'; break;
             case 9: $message = 'Публикация отзыва изменена'; break;
+            case 10: $message = 'Товар успешно сохранен'; break;
             default: $message = '';
         }
     }
@@ -54,36 +59,9 @@ function takeFirstItem($arr) {
     return $result;
 }
 
-function getProducts() {
-    $sql = "SELECT `id`,`name`,`price`,`image` FROM goods";
-    return getAssocResult($sql);
-}
-
-function getProductContent($id) {
-    $id = (int)$id;
-    $sql = "SELECT * FROM goods WHERE id = {$id}";
-    return takeFirstItem(getAssocResult($sql));
-}
-
-function getProductComments($id) {
-    $id = (int)$id;
-    $sql = "SELECT * FROM comments WHERE `good_id` = {$id} ORDER BY `id` DESC";
-    return getAssocResult($sql);
-}
-
-function getCountAllGoods() {
-    $sql = "SELECT count(*) as `count`, max(price) FROM goods";
-    return takeFirstItem(getAssocResult($sql));
-}
-
-function getNewCommentsGood() {
-    $sql = "SELECT user, message, name, price, image, goods.id FROM comments 
-            INNER JOIN goods ON comments.good_id = goods.id
-            WHERE `public`=1 ORDER BY comments.id DESC LIMIT 1";
-    return takeFirstItem(getAssocResult($sql));
-}
-
-function getLastAddingGood() {
-    $sql = "SELECT * FROM goods ORDER BY `id` DESC LIMIT 1";
-    return takeFirstItem(getAssocResult($sql));
+function imageProduct($img) {
+    if (empty($img)) {
+        $img = 'no-thumb.png';
+    }
+    return $img;
 }

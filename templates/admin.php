@@ -15,12 +15,19 @@
                     <small>Запомнить пароль</small>
                 </label>
             </div>
-            <button type="submit" class="btn btn-info w-50 d-block mx-auto" name="enter" >Войти</button>
+            <button type="submit" class="btn btn-info w-50 d-block mx-auto" name="enter">Войти</button>
         </form>
     </div>
 </div>
 <? else: ?>
 <div class="row">
+    <div class="col-4 text-center mt-3">
+        <a href="/goods/">
+            <div class="alert alert-info py-5 lead shadow-sm">
+                Управление товарами
+            </div>
+        </a>
+    </div>
     <div class="col-4 text-center mt-3">
         <a href="/orders/">
             <div class="alert alert-info py-5 lead shadow-sm">

@@ -1,7 +1,8 @@
 <?php
-function handleCommentAction($action, $id, $params) {
+function handleCommentAction($action, $id, &$params) {
     if ($action == 'delete') {
-        deleteComment($id);
+        $params['remote'] = deleteComment($id);
+        $params['is_ajax'] = true;
     }
     if ($action == 'edit') {
         $params['id_edit'] = (int)$id;
@@ -12,9 +13,9 @@ function handleCommentAction($action, $id, $params) {
         $params['is_ajax'] = true;
     }
     if ($action == 'public') {
-        reversePublicComment($id);
+        $params['publish'] = reversePublicComment($id);
+        $params['is_ajax'] = true;
     }
-    return $params;
 }
 
 function getAllComments() {
@@ -34,13 +35,8 @@ function deleteComment($id) {
     $id = (int)$id;
     $sql = "DELETE FROM comments WHERE id = {$id}";
     if (executeQuery($sql)) {
-        $success = 1;
-        $message = 6;
-    } else {
-        $success = 0;
-        $message = 5;
+        return $id;
     }
-    header ("Location: /comments/?success={$success}&message={$message}");
 }
 
 function updateComment($id) {
@@ -62,11 +58,6 @@ function reversePublicComment($id) {
     $id = (int)$id;
     $sql = "UPDATE comments SET `public`= NOT `public` WHERE id = {$id}";
     if (executeQuery($sql)) {
-        $success = 1;
-        $message = 9;
-    } else {
-        $success = 0;
-        $message = 2;
+        return $id;
     }
-    header ("Location: /comments/?success={$success}&message={$message}");
 }

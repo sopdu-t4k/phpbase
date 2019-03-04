@@ -1,6 +1,17 @@
 <h1>Каталог</h1>
-<div class="row">
-    <div class="d-flex flex-wrap">
+<? if($current_page==1 && !empty($sort)): ?>
+<div class="small">
+    Сортировать:
+    <ul class="nav d-inline-flex sort">
+        <? foreach ($sort as $key => $value): ?>
+        <li class="nav-item">
+            <a class="nav-link <?=$value==$current_sort?'disabled':'';?>" href="/catalog/?sort=<?=$value;?>"><?=$key;?></a>
+        </li>
+        <? endforeach; ?>
+    </ul>
+</div>
+<? endif; ?>
+<div class="d-flex flex-wrap row">
     <? foreach ($goods as $good): ?>
     <div class="col-4 mt-3 mb-3">
         <div class="card pt-2 h-100 shadow-sm position-relative">
@@ -23,5 +34,13 @@
         </div>
     </div>
     <? endforeach; ?>
-    </div>
 </div>
+<? if($count_page > 1): ?>
+<ul class="pagination justify-content-center my-4">
+    <? for ($idx = 1; $idx <= $count_page; $idx++): ?>
+    <li class="page-item <?=$idx==$current_page?'active':'';?>">
+        <a class="page-link" href="/catalog/?page=<?=$idx;?>"><?=$idx;?></a>
+    </li>
+    <? endfor; ?>
+</ul>
+<? endif; ?>

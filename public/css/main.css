@@ -25,6 +25,8 @@
     height: 250px;
     width: auto;
 }
+.sort a:not(:hover) {text-decoration: underline !important;}
+.sort a.disabled,
 a {text-decoration: none !important;}
 .thead-light.table-sm th {
     padding-right: .75rem;

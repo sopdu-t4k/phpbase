@@ -84,7 +84,7 @@ if (document.querySelector('[name=product]')) {
 if (document.querySelector('[name=order]')) {
     var orderForm = new Form('order', [
         new FieldForm('name', /^[A-Za-zА-Яа-яЁё\s]+$/, 'Поле может содержать буквы и пробелы', true),
-        new FieldForm('phone', /^\8\(\d{3}\)\d{7}$/, 'Укажите номер телефона в формате 8(000)0000000', true),
+        new FieldForm('phone', /^\d{3}\s?\d{3}\s?\d{2}\s?\d{2}$/, 'Укажите десятизначный номер без 8', true),
     ]);
     orderForm.init();
 }

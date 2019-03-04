@@ -3,6 +3,7 @@ define('TEMPLATES_DIR', '../templates/');
 define('ENGINE_DIR', '../engine/');
 define('LAYOUTS_DIR', '/layouts/');
 define('GALLERY_DIR', './gallery-img/');
+define('PER_PAGE', 6);
 
 /* DB config */
 define('HOST', 'localhost');

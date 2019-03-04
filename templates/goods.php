@@ -7,14 +7,26 @@
 <p class="my-4">
     <a href="/product/" class="btn btn-success w-25">Добавить товар</a>
 </p>
-<table class="table table-hover my-5">
+<? if($current_page==1 && !empty($sort)): ?>
+<div class="small">
+    Сортировать:
+    <ul class="nav d-inline-flex sort">
+        <? foreach ($sort as $key => $value): ?>
+        <li class="nav-item">
+            <a class="nav-link <?=$value==$current_sort?'disabled':'';?>" href="/goods/?sort=<?=$value;?>"><?=$key;?></a>
+        </li>
+        <? endforeach; ?>
+    </ul>
+</div>
+<? endif; ?>
+<table class="table table-hover my-3">
     <thead class="thead-light table-sm">
         <tr>
-            <th style="width: 90px"><a href="/goods/?sort=id" title="Сортировать по добавлению" class="dropdown-toggle text-info">Товар</a></th>
-            <th><a href="/goods/?sort=name" title="Сортировать по наименованию" class="dropdown-toggle text-info">Наименование</a></th>
-            <th><a href="/goods/?sort=price" title="Сортировать по цене" class="dropdown-toggle text-info">Цена</a></th>
+            <th style="width: 90px">Товар</th>
+            <th>Наименование</th>
+            <th>Цена</th>
             <th></th>
-            <th><a href="/goods/?sort=sale" title="Сортировать по акции" class="dropdown-toggle text-info">Акция</a></th>
+            <th>Акция</th>
         </tr>
     </thead>
     <tbody>
@@ -41,3 +53,12 @@
         <? endforeach; ?>
     </tbody>
 </table>
+<? if($count_page > 1): ?>
+<ul class="pagination justify-content-center my-4">
+    <? for ($idx = 1; $idx <= $count_page; $idx++): ?>
+    <li class="page-item <?=$idx==$current_page?'active':'';?>">
+        <a class="page-link" href="/goods/?page=<?=$idx;?>"><?=$idx;?></a>
+    </li>
+    <? endfor; ?>
+</ul>
+<? endif; ?>

@@ -56,7 +56,7 @@
                 <input type="text" name="name" class="form-control" placeholder="Имя">
             </div>
             <div class="form-group">
-                <input type="text" name="phone" class="form-control" placeholder="8(000)0000000">
+                <input type="text" name="phone" class="form-control" placeholder="телефон">
             </div>
             <button type="submit" name="send" class="btn btn-success btn-block">Оформить заказ</button>
         </form>

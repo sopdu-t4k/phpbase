@@ -36,6 +36,10 @@ function prepareVariables($page, $action, $id) {
             break;
         case 'catalog':
             $params['goods'] = getProducts();
+            $params['sort'] = getSortProductsList();
+            $params['current_sort'] = getSortParameter();
+            $params['count_page'] = getPageCountGoods();
+            $params['current_page'] = isset($_GET['page'])?(int)$_GET['page']:1;
             break;
         case 'sale':
             $params['goods'] = getGoodsForSale();
@@ -48,6 +52,10 @@ function prepareVariables($page, $action, $id) {
         case 'goods':
             if (!$params['allow']) { header("Location: /admin/"); }
             $params['goods'] = getProducts();
+            $params['sort'] = getSortProductsList();
+            $params['current_sort'] = getSortParameter();
+            $params['count_page'] = getPageCountGoods();
+            $params['current_page'] = isset($_GET['page'])?(int)$_GET['page']:1;
             handleGoodsAction($action, $id, $params);
             break;
         case 'product':

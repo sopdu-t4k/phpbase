@@ -9,9 +9,18 @@ function handleGoodsAction($action, $id, &$params) {
     }
 }
 
+function getSortProductsList() {
+    return [
+        'по новизне' => 'id',
+        'по названию' => 'name',
+        'по цене' => 'price',
+        'по скидке' => 'sale',
+    ];
+}
+
 function getProducts() {
     $sql = "SELECT id, name, image, price, discount, sale, price-price/100*discount as discount_price FROM goods";
-    $sort = mysqli_real_escape_string(getDb(), $_GET['sort']);
+    $sort = getSortParameter();
     switch ($sort) {
         case 'id':
             $sql .= " ORDER BY id DESC";
@@ -23,9 +32,25 @@ function getProducts() {
             $sql .= " ORDER BY price";
             break;
         case 'sale':
-            $sql .= " ORDER BY sale DESC";
+            $sql .= " ORDER BY sale DESC, discount DESC";
     }
+    $start = getStartingPoint();
+    $sql .= " LIMIT {$start}, " . PER_PAGE;
     return getAssocResult($sql);
+}
+
+function getStartingPoint() {
+    $page = 0;
+    if (isset($_GET['page'])) {
+        $page = (int)$_GET['page'] - 1; 
+    }
+    return $page * PER_PAGE;
+}
+
+function getPageCountGoods() {
+    $sql = "SELECT count(*) as `count` FROM goods";
+    $total_count = (int)takeFirstItem(getAssocResult($sql))['count'];
+    return ceil($total_count / PER_PAGE);
 }
 
 function getProductContent($id) {
@@ -79,7 +104,7 @@ function startQuerySend($id = '') {
     $image = $_FILES['image']['name'];
     $price = (float)$_POST['price'];
     $discount = (int)$_POST['discount'];
-    $sale = $_POST['sale']=='on';
+    $sale = isset($_POST['sale']);
     if (!empty($id)) {
         $id = (int)$id;
         updateProduct($id, $name, $description, $image, $price, $discount, $sale);
@@ -96,8 +121,9 @@ function updateProduct($id, $name, $description, $image, $price, $discount, $sal
         $sql = "UPDATE goods SET
                `name`= '{$name}', `description` = '{$description}', `price` = '{$price}', `discount` = '{$discount}', `sale` = '{$sale}'
                WHERE `id`={$id}";    
+    } else {
+        unlinkImageProduct($id);
     }
-    unlinkImageProduct($id);
     return executeQuery($sql);
 }
 
@@ -108,11 +134,9 @@ function addProduct($name, $description, $image, $price, $discount, $sale) {
 }
 
 function unlinkImageProduct($id) {
-    if (isset($_POST['remove']) || !isset($_POST['remove']) && !empty($_FILES['image']['name'])) {
-        $image_name = getImageProduct($id);
-        if (!empty($image_name)) {
-            unlink("./catalog-img/{$image_name}");
-        }
+    $image_name = getImageProduct($id);
+    if (!empty($image_name)) {
+        @unlink("./catalog-img/{$image_name}");
     }
 }
 

@@ -65,3 +65,14 @@ function imageProduct($img) {
     }
     return $img;
 }
+
+function getSortParameter() {
+    $sort = mysqli_real_escape_string(getDb(), $_GET['sort']);
+    if(isset($_GET['sort'])) {
+        $_SESSION['sort'] = $sort;
+    }
+    if(isset($_SESSION['sort'])) {
+        $sort = $_SESSION['sort'];
+    }
+    return $sort;
+}

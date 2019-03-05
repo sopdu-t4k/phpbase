@@ -1,16 +1,15 @@
 <?php
-function handleGalleryAction($action, $id, $params) {
+function handleGalleryAction($action, $id, &$params) {
     if ($action == 'add' && isset($_POST['load'])) {
         addImage($_FILES['image']);
     }
     if ($action == 'delete') {
         deleteImage($id);
     }
-    return $params;
 }
 
 function getImages() {
-    $sort = mysqli_real_escape_string(getDb(), $_GET['sort']);
+    $sort = getSortParameter();
     switch ($sort) {
         case 'popularity':
             $sql = "SELECT * FROM gallery ORDER BY count DESC";

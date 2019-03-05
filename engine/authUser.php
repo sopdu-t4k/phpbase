@@ -1,33 +1,36 @@
 <?php
-session_start();
 /*
 $login = 'admin';
 $password = password_hash('123456', PASSWORD_DEFAULT);
 $sql = "INSERT INTO users (`login`, `pass`) VALUES ('{$login}', '{$password}');";
 executeQuery($sql);
 */
+function login() {
+    if (isset($_POST['enter'])) {
+        $login = $_POST['login'];
+        $pass = $_POST['pass'];
 
-if (isset($_GET['logout'])) {
-    session_destroy();
-    setcookie("hash");
-    header("Location: /admin/");
+        if (!auth($login, $pass)) {
+            Die('Не верный логин или пароль');
+        } else {
+            if (isset($_POST['remember'])) {
+                $hash = uniqid(rand(), true);
+                $db = getDb();
+                $id = mysqli_real_escape_string($db, strip_tags(stripslashes($_SESSION['id'])));
+                $sql = "UPDATE users SET `hash` = '{$hash}' WHERE `id` = {$id}";
+                $result = mysqli_query($db, $sql);
+                setcookie("hash", $hash, time() + 3600, '/');
+            }
+            header("Location: /admin/");
+        }
+    }
 }
 
-if (isset($_POST['enter'])) {
-    $login = $_POST['login'];
-    $pass = $_POST['pass'];
-
-    if (!auth($login, $pass)) {
-        Die('Не верный логин или пароль');
-    } else {
-        if (isset($_POST['remember'])) {
-            $hash = uniqid(rand(), true);
-            $db = getDb();
-            $id = mysqli_real_escape_string($db, strip_tags(stripslashes($_SESSION['id'])));
-            $sql = "UPDATE users SET `hash` = '{$hash}' WHERE `id` = {$id}";
-            $result = mysqli_query($db, $sql);
-            setcookie("hash", $hash, time() + 3600);
-        }
+function handleAdminAction($action) {
+    if ($action == 'logout') {
+        session_destroy();
+        setcookie("hash", '', time() - 3600, '/');
+        header("Location: /admin/");
     }
 }
 

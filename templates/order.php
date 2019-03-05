@@ -7,13 +7,23 @@
     <dd class="col-10"><?=$order['user_name'];?></dd>
     <dt class="col-2">Телефон:</dt>
     <dd class="col-10"><?=$order['phone'];?></dd>
+    <dt class="col-2">Статус:</dt>
+    <dd class="col-2">
+        <select id="status" data-id="<?=$order['id'];?>" class="form-control form-control-sm">
+            <? foreach($statuses as $item): ?>
+            <option <?=$item['id']==$order['status']?'selected':'';?> value="<?=$item['id'];?>">
+                <?=$item['status'];?>
+            </option>
+            <? endforeach; ?>
+        </select>
+    </dd>
 </dl>
 <table class="table my-5">
     <thead class="thead-light table-sm">
         <tr>
-            <th class="px-3">Наименование</th>
-            <th class="px-3">Цена</th>
-            <th class="pr-3">Количество</th>
+            <th>Наименование</th>
+            <th>Цена</th>
+            <th>Количество</th>
         </tr>
     </thead>
     <tbody>
@@ -23,7 +33,7 @@
                 <a href="/tovar/<?=$good['good_id'];?>" class="h5"><?=$good['name'];?></a>
             </td>
             <td>
-                <span class="h5"><?=$good['price'];?> р.</span>
+                <span class="h5"><?=round($good['current_price']);?> р.</span>
             </td>
             <td style="width: 60px">
                 <?=$good['quantity'];?> шт.
@@ -37,7 +47,7 @@
         <p class="h5">
             Общая стоимость: 
             <span class="h4 text-danger ml-2">
-                <span id="total"><?=$total['summ'];?></span> р. 
+                <span id="total"><?=round($total['summ']);?></span> р. 
             </span>
         </p>
     </div>

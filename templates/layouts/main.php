@@ -8,6 +8,7 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
         <link href="/css/main.css" rel="stylesheet" type="text/css"/>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     </head>
     <body class="min-vh-100">
         <div class="min-vh-100 d-flex flex-column">
@@ -40,14 +41,17 @@
                                 <a class="nav-link text-info" href="/gallery/">Галерея</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-info" href="/comments/">Отзывы</a>
+                                <a class="nav-link text-info" href="/goods/">Товары</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-info" href="/orders/">Заказы</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-info" href="/comments/">Отзывы</a>
+                            </li>
                         </ul>
                         <span class="ml-auto mr-4"><?=$user;?></span>
-                        <a href="?logout" class="btn btn-outline-info">Выход</a>
+                        <a href="/admin/logout/" class="btn btn-outline-info">Выход</a>
                     </nav>
                 </div>
             </div>
@@ -59,6 +63,13 @@
                 <small>&copy;<?=$year;?></small>
             </footer>
         </div>
+        <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" id="toast">
+            <button type="button" class="mx-1 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="toast-body p-3"></div>
+        </div>
+        <script src="/js/verification.js"></script>
         <script src="/js/main.js"></script>
     </body>
 </html>

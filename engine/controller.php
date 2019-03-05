@@ -5,6 +5,8 @@ function prepareVariables($page, $action, $id) {
         'is_ajax' => false,
         'allow' => isAuth(),
         'current' => $page,
+        'message' => getMessage(),
+        'success' => (int)$_GET['success'] == 1,
     ];
     switch ($page) {
         case 'index':
@@ -12,13 +14,16 @@ function prepareVariables($page, $action, $id) {
             $params['goods'] = getCountAllGoods();
             $params['comment_good'] = getNewCommentsGood();
             $params['last_good'] = getLastAddingGood();
+            $params['sale'] = array_slice(getGoodsForSale(), 0, 2);
+            break;
+        case 'admin':
+            login();
+            handleAdminAction($action);
             break;
         case 'gallery':
             $params['images'] = getImages();
-            $params['message'] = getMessage();
-            $params['success'] = (int)$_GET['success'] == 1;
             if ($params['allow']) {
-                $params = handleGalleryAction($action, $id, $params);
+                handleGalleryAction($action, $id, $params);
             }
             break;
         case 'image':
@@ -27,22 +32,40 @@ function prepareVariables($page, $action, $id) {
             $params['count'] = $content['count'];
             break;
         case 'calc':
-            $params = handleMathAction($action, $params);
+            handleMathAction($action, $params);
             break;
         case 'catalog':
             $params['goods'] = getProducts();
+            $params['sort'] = getSortProductsList();
+            $params['current_sort'] = getSortParameter();
+            $params['count_page'] = getPageCountGoods();
+            $params['current_page'] = isset($_GET['page'])?(int)$_GET['page']:1;
+            break;
+        case 'sale':
+            $params['goods'] = getGoodsForSale();
             break;
         case 'tovar':
             $params['current'] = 'catalog';
             $params['good'] = getProductContent($id);
             $params['comments'] = getProductComments($id);
             break;
+        case 'goods':
+            if (!$params['allow']) { header("Location: /admin/"); }
+            $params['goods'] = getProducts();
+            $params['sort'] = getSortProductsList();
+            $params['current_sort'] = getSortParameter();
+            $params['count_page'] = getPageCountGoods();
+            $params['current_page'] = isset($_GET['page'])?(int)$_GET['page']:1;
+            handleGoodsAction($action, $id, $params);
+            break;
+        case 'product':
+            if (isset($id)) {
+                $params['good'] = getProductContent($id);
+            }
         case 'comments':
             if ($params['allow'] || $action == 'add') { 
                 $params['comments'] = getAllComments();
-                $params['message'] = getMessage();
-                $params['success'] = (int)$_GET['success'] == 1;
-                $params = handleCommentAction($action, $id, $params);
+                handleCommentAction($action, $id, $params);
             } else {
                 header("Location: /admin/");
             }
@@ -50,9 +73,7 @@ function prepareVariables($page, $action, $id) {
         case 'basket':
             $params['basket'] = getBasket();
             $params['total'] = getTotalAmount();
-            $params['message'] = getMessage();
-            $params['success'] = (int)$_GET['success'] == 1;
-            $params = handleBasketAction($action, $id, $params);
+            handleBasketAction($action, $id, $params);
             break;
         case 'orders':
             if (!$params['allow']) { header("Location: /admin/"); }
@@ -64,6 +85,8 @@ function prepareVariables($page, $action, $id) {
             $params['order'] = getOrderData($id);
             $params['basket'] = getOrderBasket($id);
             $params['total'] = getOrderTotalAmount($id);
+            $params['statuses'] = getListOrderStatus();
+            handleOrderAction($action, $id, $params);
     }
     return $params;
 }
@@ -76,7 +99,7 @@ function render($page, $params = []) {
             'content' => renderTemplate($page, $params),
             'menu' => renderTemplate('menu', $params),
             'cart' => getTotalQuantity(),
-            'title' => 'Название сайта', 
+            'title' => 'Лучший магазин', 
             'year' => '2019',
         ]);
     } else {
